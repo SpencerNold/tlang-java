@@ -1,0 +1,2 @@
+rootProject.name = "Tlang-Compiler"
+
