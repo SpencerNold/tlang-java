@@ -9,10 +9,10 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            Lexer lexer = new Lexer(new StringReader("5.5"));
+            Lexer lexer = new Lexer(new StringReader("/="));
             Token<?> token;
             while ((token = lexer.yylex()) != null) {
-                System.out.printf("%04X\n", token.getType());
+                System.out.printf("%04X: %s\n", token.getType(), String.valueOf(token.getValue()));
             }
         } catch (IOException e) {
             e.printStackTrace();

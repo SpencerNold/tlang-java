@@ -102,6 +102,7 @@ public class Type {
     public static int FUTURE = 0x3118;
     public static int UNSAFE = 0x3119;
     public static int DEFER = 0x311A;
+    public static int EXTERNAL = 0x311B;
 
     public static boolean isType(int mask, int type) {
         return (mask | type) == mask;
