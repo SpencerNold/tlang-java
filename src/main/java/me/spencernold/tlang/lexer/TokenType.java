@@ -1,6 +1,6 @@
 package me.spencernold.tlang.lexer;
 
-public class Type {
+public class TokenType {
     public static int ERROR = 0x000;
     public static int WHITESPACE = 0x100;
     public static int NOP = 0x100;

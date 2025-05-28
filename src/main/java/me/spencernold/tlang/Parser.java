@@ -1,5 +1,9 @@
 package me.spencernold.tlang;
 
+import me.spencernold.tlang.compiler.Node;
+import me.spencernold.tlang.lexer.Token;
+import me.spencernold.tlang.lexer.TokenType;
+import me.spencernold.tlang.parser.NodeType;
 import me.spencernold.tlang.parser.TokenStream;
 
 public class Parser {
@@ -10,7 +14,15 @@ public class Parser {
         this.stream = TokenStream.wrap(lexer);
     }
 
-    public void parseFile() {
+    public void parse() {
         
+    }
+
+    private void parseFile() {
+        Node<?> root = new Node<>(NodeType.NT_FILE);
+        Token<?> token = stream.peek();
+        if (token.getType() == TokenType.INCLUDE) {
+
+        }
     }
 }

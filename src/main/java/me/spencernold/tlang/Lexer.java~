@@ -4,8 +4,10 @@
 
 package me.spencernold.tlang;
 
+import me.spencernold.tlang.Errors;
+
 import me.spencernold.tlang.lexer.Token;
-import me.spencernold.tlang.lexer.Type;
+import me.spencernold.tlang.lexer.TokenType;
 
 
 @SuppressWarnings("fallthrough")
@@ -940,12 +942,12 @@ public int getCurrentLineNumber() {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1:
-            { System.err.printf("Unexpected token on line: %d, \"%s\"\n", line, yytext()); return new Token<>(Type.ERROR);
+            { Errors.print("Unexpected token", line, yytext()); return new Token<>(Type.ERROR);
             }
           // fall through
           case 103: break;
           case 2:
-            { return new Token<>(Type.WHITESPACE);
+            { /* return new Token<>(Type.WHITESPACE); */
             }
           // fall through
           case 104: break;
