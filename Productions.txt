@@ -2,8 +2,11 @@
 # lower cased names and symbols are terminals
 # 'lambda' represents an empty string that can be matched
 # Text surrounded by * represents terminals of a TOKEN_TYPE
+# | is representative of logical or
 
-FILE -> INCLUDE | DECLARATION | CLASS | lambda
-INCLUDE -> INCLUDE *STRING_LIT*
-DECLARATION -> *ACCESS* TYPE *IDENTIFIER*TAIL
+FILE -> FILE | INCLUDE | DECLARATION | CLASS | lambda
+INCLUDE -> include *STRING_LIT*
+DECLARATION -> ACCESS TYPE *IDENTIFIER*TAIL
+ACCESS -> PRIVATE | PROTECTED | lambda
+TYPE -> *TYPE_MASK* | IDENTIFIER
 TAIL -> (PARAMETER...)BODY | = VALUE

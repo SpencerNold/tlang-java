@@ -1,6 +1,6 @@
 package me.spencernold.tlang;
 
-import me.spencernold.tlang.Errors;
+import me.spencernold.tlang.lexer.LexException;
 
 import me.spencernold.tlang.lexer.Token;
 import me.spencernold.tlang.lexer.TokenType;
@@ -18,9 +18,16 @@ import me.spencernold.tlang.lexer.TokenType;
 
 private final StringBuilder buffer = new StringBuilder();
 private int line = 1;
+private int index = 0;
 
-public int getCurrentLineNumber() {
-    return line;
+private Token<?> token(int type) {
+    return token(type, null);
+}
+
+private <T> Token<T> token(int type, T value) {
+    Token<T> token = new Token<T>(type, value, line, index);
+    index += yytext().length();
+    return token;
 }
 
 %}
@@ -42,7 +49,7 @@ public int getCurrentLineNumber() {
     \\f  { buffer.append('\f'); }
     \\\\ { buffer.append('\\'); }
     \\\" { buffer.append('\"'); }
-    \"   { yybegin(YYINITIAL); return new Token<>(TokenType.STRING_LIT, buffer.toString()); }
+    \"   { yybegin(YYINITIAL); return token(TokenType.STRING_LIT, buffer.toString()); }
     .    { buffer.append(yytext()); }
 }
 
@@ -53,7 +60,7 @@ public int getCurrentLineNumber() {
     \\f  { buffer.append('\f'); }
     \\\\ { buffer.append('\\'); }
     \\'  { buffer.append('\''); }
-    '    { yybegin(YYINITIAL); return new Token<>(TokenType.STRING_LIT, buffer.toString()); }
+    '    { yybegin(YYINITIAL); return token(TokenType.STRING_LIT, buffer.toString()); }
     .    { buffer.append(yytext()); }
 }
 
@@ -64,105 +71,105 @@ public int getCurrentLineNumber() {
     \\f  { buffer.append('\f'); }
     \\\\ { buffer.append('\\'); }
     \\`  { buffer.append('`'); }
-    `    { yybegin(YYINITIAL); return new Token<>(TokenType.STRING_LIT, buffer.toString()); }
+    `    { yybegin(YYINITIAL); return token(TokenType.STRING_LIT, buffer.toString()); }
     .    { buffer.append(yytext()); }
 }
 
 <YYINITIAL> {
-    "("                    { return new Token<>(TokenType.O_PARENTHESES); }
-    ")"                    { return new Token<>(TokenType.C_PARENTHESES); }
-    "{"                    { return new Token<>(TokenType.O_C_BRACKET); }
-    "}"                    { return new Token<>(TokenType.C_C_BRACKET); }
-    "["                    { return new Token<>(TokenType.O_BRACKET); }
-    "]"                    { return new Token<>(TokenType.C_BRACKET); }
-    "."                    { return new Token<>(TokenType.DOT); }
-    ","                    { return new Token<>(TokenType.COMMA); }
+    "("                    { return token(TokenType.O_PARENTHESES); }
+    ")"                    { return token(TokenType.C_PARENTHESES); }
+    "{"                    { return token(TokenType.O_C_BRACKET); }
+    "}"                    { return token(TokenType.C_C_BRACKET); }
+    "["                    { return token(TokenType.O_BRACKET); }
+    "]"                    { return token(TokenType.C_BRACKET); }
+    "."                    { return token(TokenType.DOT); }
+    ","                    { return token(TokenType.COMMA); }
 
-    "true"                 { return new Token<>(TokenType.TRUE_VALUE); }
-    "false"                { return new Token<>(TokenType.FALSE_VALUE); }
-    "null"                 { return new Token<>(TokenType.NULL_VALUE); }
+    "true"                 { return token(TokenType.TRUE_VALUE); }
+    "false"                { return token(TokenType.FALSE_VALUE); }
+    "null"                 { return token(TokenType.NULL_VALUE); }
 
-    "int8"                 { return new Token<>(TokenType.INT8); }
-    "int16"                { return new Token<>(TokenType.INT16); }
-    "int32"                { return new Token<>(TokenType.INT32); }
-    "int64"                { return new Token<>(TokenType.INT64); }
-    "uint8"                { return new Token<>(TokenType.UINT8); }
-    "uint16"               { return new Token<>(TokenType.UINT16); }
-    "uint32"               { return new Token<>(TokenType.UINT32); }
-    "uint64"               { return new Token<>(TokenType.UINT64); }
-    "char"                 { return new Token<>(TokenType.CHAR); }
-    "bool"                 { return new Token<>(TokenType.BOOL); }
-    "float32"              { return new Token<>(TokenType.FLOAT32); }
-    "float64"              { return new Token<>(TokenType.FLOAT64); }
-    "function"             { return new Token<>(TokenType.FUNCTION); }
-    "void"                 { return new Token<>(TokenType.VOID); }
-    "string"               { return new Token<>(TokenType.STRING); }
+    "int8"                 { return token(TokenType.INT8); }
+    "int16"                { return token(TokenType.INT16); }
+    "int32"                { return token(TokenType.INT32); }
+    "int64"                { return token(TokenType.INT64); }
+    "uint8"                { return token(TokenType.UINT8); }
+    "uint16"               { return token(TokenType.UINT16); }
+    "uint32"               { return token(TokenType.UINT32); }
+    "uint64"               { return token(TokenType.UINT64); }
+    "char"                 { return token(TokenType.CHAR); }
+    "bool"                 { return token(TokenType.BOOL); }
+    "float32"              { return token(TokenType.FLOAT32); }
+    "float64"              { return token(TokenType.FLOAT64); }
+    "function"             { return token(TokenType.FUNCTION); }
+    "void"                 { return token(TokenType.VOID); }
+    "string"               { return token(TokenType.STRING); }
 
-    "include"              { return new Token<>(TokenType.INCLUDE); }
-    "private"              { return new Token<>(TokenType.PRIVATE); }
-    "protected"            { return new Token<>(TokenType.PROTECTED); }
-    "class"                { return new Token<>(TokenType.CLASS); }
-    "enum"                 { return new Token<>(TokenType.ENUM); }
-    "interface"            { return new Token<>(TokenType.INTERFACE); }
-    "new"                  { return new Token<>(TokenType.NEW); }
-    "extends"              { return new Token<>(TokenType.EXTENDS); }
-    "implements"           { return new Token<>(TokenType.IMPLEMENTS); }
-    "abstract"             { return new Token<>(TokenType.ABSTRACT); }
-    "final"                { return new Token<>(TokenType.FINAL); }
-    "assert"               { return new Token<>(TokenType.ASSERT); }
-    "this"                 { return new Token<>(TokenType.THIS); }
-    "return"               { return new Token<>(TokenType.RETURN); }
-    "if"                   { return new Token<>(TokenType.IF); }
-    "else"                 { return new Token<>(TokenType.ELSE); }
-    "for"                  { return new Token<>(TokenType.FOR); }
-    "in"                   { return new Token<>(TokenType.IN); }
-    "range"                { return new Token<>(TokenType.RANGE); }
-    "while"                { return new Token<>(TokenType.WHILE); }
-    "continue"             { return new Token<>(TokenType.CONTINUE); }
-    "break"                { return new Token<>(TokenType.BREAK); }
-    "is"                   { return new Token<>(TokenType.IS); }
-    "async"                { return new Token<>(TokenType.ASYNC); }
-    "future"               { return new Token<>(TokenType.FUTURE); }
-    "unsafe"               { return new Token<>(TokenType.UNSAFE); }
-    "defer"                { return new Token<>(TokenType.DEFER); }
-    "external"             { return new Token<>(TokenType.EXTERNAL); }
+    "include"              { return token(TokenType.INCLUDE); }
+    "private"              { return token(TokenType.PRIVATE); }
+    "protected"            { return token(TokenType.PROTECTED); }
+    "class"                { return token(TokenType.CLASS); }
+    "enum"                 { return token(TokenType.ENUM); }
+    "interface"            { return token(TokenType.INTERFACE); }
+    "new"                  { return token(TokenType.NEW); }
+    "extends"              { return token(TokenType.EXTENDS); }
+    "implements"           { return token(TokenType.IMPLEMENTS); }
+    "abstract"             { return token(TokenType.ABSTRACT); }
+    "final"                { return token(TokenType.FINAL); }
+    "assert"               { return token(TokenType.ASSERT); }
+    "this"                 { return token(TokenType.THIS); }
+    "return"               { return token(TokenType.RETURN); }
+    "if"                   { return token(TokenType.IF); }
+    "else"                 { return token(TokenType.ELSE); }
+    "for"                  { return token(TokenType.FOR); }
+    "in"                   { return token(TokenType.IN); }
+    "range"                { return token(TokenType.RANGE); }
+    "while"                { return token(TokenType.WHILE); }
+    "continue"             { return token(TokenType.CONTINUE); }
+    "break"                { return token(TokenType.BREAK); }
+    "is"                   { return token(TokenType.IS); }
+    "async"                { return token(TokenType.ASYNC); }
+    "future"               { return token(TokenType.FUTURE); }
+    "unsafe"               { return token(TokenType.UNSAFE); }
+    "defer"                { return token(TokenType.DEFER); }
+    "external"             { return token(TokenType.EXTERNAL); }
 
-    "="                    { return new Token<>(TokenType.EQ_OPER); }
-    "+"                    { return new Token<>(TokenType.ADD_OPER); }
-    "-"                    { return new Token<>(TokenType.SUB_OPER); }
-    "*"                    { return new Token<>(TokenType.MUL_OPER); }
-    "/"                    { return new Token<>(TokenType.DIV_OPER); }
-    "%"                    { return new Token<>(TokenType.MOD_OPER); }
-    "+="                   { return new Token<>(TokenType.ADD_EQ_OPER); }
-    "-="                   { return new Token<>(TokenType.SUB_EQ_OPER); }
-    "*="                   { return new Token<>(TokenType.MUL_EQ_OPER); }
-    "/="                   { return new Token<>(TokenType.DIV_EQ_OPER); }
-    "%="                   { return new Token<>(TokenType.MOD_EQ_OPER); }
-    "++"                   { return new Token<>(TokenType.INCR_OPER); }
-    "--"                   { return new Token<>(TokenType.DECR_OPER); }
-    "**"                   { return new Token<>(TokenType.POW_OPER); }
-    ">"                    { return new Token<>(TokenType.GT_OPER); }
-    "<"                    { return new Token<>(TokenType.LT_OPER); }
-    ">="                   { return new Token<>(TokenType.GT_EQ_OPER); }
-    "<="                   { return new Token<>(TokenType.LT_EQ_OPER); }
-    "&"                    { return new Token<>(TokenType.BIT_AND_OPER); }
-    "|"                    { return new Token<>(TokenType.BIT_OR_OPER); }
-    "~"                    { return new Token<>(TokenType.BIT_NOT_OPER); }
-    "^"                    { return new Token<>(TokenType.BIT_XOR_OPER); }
-    "<<"                   { return new Token<>(TokenType.BIT_SHL_OPER); }
-    ">>"                   { return new Token<>(TokenType.BIT_SHR_OPER); }
-    "and"                  { return new Token<>(TokenType.AND_OPER); }
-    "or"                   { return new Token<>(TokenType.OR_OPER); }
-    "not"                  { return new Token<>(TokenType.NOT_OPER); }
-    "?"                    { return new Token<>(TokenType.TERNARY_OPER); }
+    "="                    { return token(TokenType.EQ_OPER); }
+    "+"                    { return token(TokenType.ADD_OPER); }
+    "-"                    { return token(TokenType.SUB_OPER); }
+    "*"                    { return token(TokenType.MUL_OPER); }
+    "/"                    { return token(TokenType.DIV_OPER); }
+    "%"                    { return token(TokenType.MOD_OPER); }
+    "+="                   { return token(TokenType.ADD_EQ_OPER); }
+    "-="                   { return token(TokenType.SUB_EQ_OPER); }
+    "*="                   { return token(TokenType.MUL_EQ_OPER); }
+    "/="                   { return token(TokenType.DIV_EQ_OPER); }
+    "%="                   { return token(TokenType.MOD_EQ_OPER); }
+    "++"                   { return token(TokenType.INCR_OPER); }
+    "--"                   { return token(TokenType.DECR_OPER); }
+    "**"                   { return token(TokenType.POW_OPER); }
+    ">"                    { return token(TokenType.GT_OPER); }
+    "<"                    { return token(TokenType.LT_OPER); }
+    ">="                   { return token(TokenType.GT_EQ_OPER); }
+    "<="                   { return token(TokenType.LT_EQ_OPER); }
+    "&"                    { return token(TokenType.BIT_AND_OPER); }
+    "|"                    { return token(TokenType.BIT_OR_OPER); }
+    "~"                    { return token(TokenType.BIT_NOT_OPER); }
+    "^"                    { return token(TokenType.BIT_XOR_OPER); }
+    "<<"                   { return token(TokenType.BIT_SHL_OPER); }
+    ">>"                   { return token(TokenType.BIT_SHR_OPER); }
+    "and"                  { return token(TokenType.AND_OPER); }
+    "or"                   { return token(TokenType.OR_OPER); }
+    "not"                  { return token(TokenType.NOT_OPER); }
+    "?"                    { return token(TokenType.TERNARY_OPER); }
 
-    "-"?[1-9][0-9]*        { return new Token<>(TokenType.DECIMAL, Long.parseLong(yytext())); }
-    "0x"[0-9a-fA-F]+       { return new Token<>(TokenType.DECIMAL, Long.parseLong(yytext().substring(2), 16)); }
-    "-"?[0-9]+"."[0-9]*    { return new Token<>(TokenType.FLOATING_POINT, Double.parseDouble(yytext())); }
-    [a-zA-Z_][a-zA-Z0-9_]* { return new Token<>(TokenType.IDENTIFIER, yytext()); }
-    [ \t\r]+               { /* return new Token<>(TokenType.WHITESPACE); */ }
-    [\n]                   { line++; }
+    "-"?[1-9][0-9]*        { return token(TokenType.DECIMAL, Long.parseLong(yytext())); }
+    "0x"[0-9a-fA-F]+       { return token(TokenType.DECIMAL, Long.parseLong(yytext().substring(2), 16)); }
+    "-"?[0-9]+"."[0-9]*    { return token(TokenType.FLOATING_POINT, Double.parseDouble(yytext())); }
+    [a-zA-Z_][a-zA-Z0-9_]* { return token(TokenType.IDENTIFIER, yytext()); }
+    [ \t\r]+                { index += yytext().length(); }
+    [\n]                   { line++; index = 0; }
 
-    .                      { Errors.print("Unexpected token", line, yytext()); return new Token<>(TokenType.ERROR); }
+    .                      { throw new LexException("Unexpected token", line, yytext()); }
     <<EOF>>                { return null; }
 }

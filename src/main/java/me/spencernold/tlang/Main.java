@@ -9,13 +9,9 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            File file = new File("stdtl/stdio.tl");
-            FileReader reader = new FileReader(file);
+            File file = new File("stdtl/test.tl");
             Compiler compiler = new Compiler();
-
-            compiler.compile(new BufferedReader(reader));
-
-            reader.close();
+            compiler.compile(file);
         } catch (IOException e) {
             e.printStackTrace();
         }

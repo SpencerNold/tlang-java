@@ -5,13 +5,14 @@ public class Token<T> {
     private final int type;
     private final T value;
 
-    public Token(int type, T value) {
+    private final int line;
+    private final int index;
+
+    public Token(int type, T value, int line, int index) {
         this.type = type;
         this.value = value;
-    }
-
-    public Token(int type) {
-        this(type, null);
+        this.line = line;
+        this.index = index;
     }
 
     public int getType() {
@@ -20,5 +21,13 @@ public class Token<T> {
 
     public T getValue() {
         return value;
+    }
+
+    public int getLine() {
+        return line;
+    }
+
+    public int getIndex() {
+        return index;
     }
 }
